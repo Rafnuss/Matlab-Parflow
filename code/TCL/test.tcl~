@@ -1,0 +1,96 @@
+#---------------------------------------------------------
+# TCL Script initialize
+#---------------------------------------------------------
+
+lappend auto_path $env(PARFLOW_DIR)/bin 
+package require parflow
+namespace import Parflow::*
+
+pfset FileVersion 			4
+pfset Process.Topology.P        	1
+pfset Process.Topology.Q        	1
+pfset Process.Topology.R        	1
+
+cd ..
+cd output
+
+set runname year109
+
+set mask 		[pfload $runname.out.mask.pfb]
+#file delete $runname.out.mask.pfb
+set mannings		[pfload $runname.out.mannings.silo]
+#file delete $runname.out.mannings.silo
+set specific_storage	[pfload $runname.out.specific_storage.silo]
+#file delete $runname.out.specific_storage.silo
+set porosity		[pfload $runname.out.porosity.silo]
+#file delete $runname.out.porosity.silo
+set slopex 		[pfload slopex.pfb]
+set slopey 		[pfload slopey.pfb]
+set perm		[pfload perm.pfb]
+puts "And create some more intresting (2/4) "
+set dem			[pfload dem.pfb]
+
+set top 		[pfcomputetop $mask]
+set top_perm 		[pfextracttop $top $perm]
+set upstreamarea	[pfupstreamarea $dem $slopex $slopey]
+
+
+
+#set stoptime [pfget TimingInfo.StopTime]
+
+puts "Converting CLM into TXT file (4/4) "
+
+for {set i 73} { $i <= 1200 } {incr i} {
+    set i_string [format "%05d" $i]    
+    
+    set eflx_lh_tot [pfload $runname.out.eflx_lh_tot.$i_string.silo]
+    set eflx_lwrad_out [pfload $runname.out.eflx_lwrad_out.$i_string.silo]
+    set eflx_soil_grnd [pfload $runname.out.eflx_soil_grnd.$i_string.silo]
+    set eflx_sh_tot [pfload $runname.out.eflx_sh_tot.$i_string.silo]
+    set qflx_evap_grnd [pfload $runname.out.qflx_evap_grnd.$i_string.silo]
+    set qflx_evap_soi [pfload $runname.out.qflx_evap_soi.$i_string.silo]
+    set qflx_evap_tot [pfload $runname.out.qflx_evap_tot.$i_string.silo]
+    set qflx_evap_veg [pfload $runname.out.qflx_evap_veg.$i_string.silo]
+    set qflx_infl [pfload $runname.out.qflx_infl.$i_string.silo]
+    set qflx_tran_veg [pfload $runname.out.qflx_tran_veg.$i_string.silo]
+    set swe_out [pfload $runname.out.swe_out.$i_string.silo]
+    set t_grnd [pfload $runname.out.t_grnd.$i_string.silo]
+    set t_soil [pfload $runname.out.t_soil.$i_string.silo]
+
+    file delete $runname.out.eflx_lh_tot.$i_string.silo
+    file delete $runname.out.eflx_lwrad_out.$i_string.silo
+    file delete $runname.out.eflx_soil_grnd.$i_string.silo
+    file delete $runname.out.eflx_sh_tot.$i_string.silo
+    file delete pfload $runname.out.qflx_evap_grnd.$i_string.silo
+    file delete $runname.out.qflx_evap_soi.$i_string.silo
+    file delete $runname.out.qflx_evap_tot.$i_string.silo
+    file delete $runname.out.qflx_evap_veg.$i_string.silo
+    file delete $runname.out.qflx_infl.$i_string.silo
+    file delete $runname.out.qflx_tran_veg.$i_string.silo
+    file delete $runname.out.swe_out.$i_string.silo
+    file delete $runname.out.t_grnd.$i_string.silo
+    file delete $runname.out.t_soil.$i_string.silo
+
+    file delete $runname.out.press_post_clm.$i_string.silo
+    file delete $runname.out.press_pre_clm.$i_string.silo
+	
+    cd ./TXT
+
+    pfsave $eflx_lh_tot -sa eflx_lh_tot.$i_string.txt
+    pfsave $eflx_lwrad_out -sa eflx_lwrad_out.$i_string.txt
+    pfsave $eflx_soil_grnd -sa eflx_soil_grnd.$i_string.txt
+    pfsave $eflx_sh_tot -sa eflx_sh_tot.$i_string.txt
+    pfsave $qflx_evap_grnd -sa qflx_evap_grnd.$i_string.txt
+    pfsave $qflx_evap_soi -sa qflx_evap_soi.$i_string.txt
+    pfsave $qflx_evap_tot -sa qflx_evap_tot.$i_string.txt
+    pfsave $qflx_evap_veg -sa qflx_evap_veg.$i_string.txt
+    pfsave $qflx_infl -sa qflx_infl.$i_string.txt
+    pfsave $qflx_tran_veg -sa qflx_tran_veg.$i_string.txt
+    pfsave $swe_out -sa swe_out.$i_string.txt
+    pfsave $t_grnd -sa t_grnd.$i_string.txt
+    pfsave $t_soil -sa t_soil.$i_string.txt
+    cd ..
+}
+
+puts "---------------All finished-----------------"
+

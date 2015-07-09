@@ -1,0 +1,139 @@
+#---------------------------------------------------------
+# TCL Script to prepare data
+#---------------------------------------------------------
+#set env(PARFLOW_DIR) /home/raphael/parflow/parflow
+
+lappend auto_path $env(PARFLOW_DIR)/bin 
+package require parflow
+namespace import Parflow::*
+
+pfset FileVersion 			4
+pfset Process.Topology.P        	1
+pfset Process.Topology.Q        	1
+pfset Process.Topology.R        	1
+
+set fileId 	[open runinfo.txt r]
+set runname 	[gets $fileId]
+set chemin 	[gets $fileId]
+
+set LowerX 	[gets $fileId]
+set LowerY 	[gets $fileId]
+set LowerZ 	[gets $fileId]
+set UpperX 	[gets $fileId]
+set UpperY 	[gets $fileId]
+set UpperZ 	[gets $fileId]
+set NX 		[gets $fileId]
+set NY 		[gets $fileId]
+set NZ 		[gets $fileId]
+set DX 		[gets $fileId]
+set DY 		[gets $fileId]
+set DZ 		[gets $fileId]
+
+set stoptime 	[gets $fileId]
+set dumptime 	[gets $fileId]
+set steptime 	[gets $fileId]
+
+set ICPressVal	[gets $fileId]
+
+set SSat	[gets $fileId]
+set SRes 	[gets $fileId]
+set alpha	[gets $fileId]
+set N		[gets $fileId]
+
+set Ss		[gets $fileId]
+set porosity	[gets $fileId]
+set Ks 		[gets $fileId]
+set manning 	[gets $fileId]
+close $fileId
+
+#---------------------------------------------------------
+# Load all the data required : Permeability, Van Genuchten parm and Saturation
+#---------------------------------------------------------
+
+set dem [pfload dem.sa]
+set perm [pfload perm.sa]
+#set manning [pfload manning.sa]
+#set SSat [pfload SSat.sa]
+#set SRes [pfload SRes.sa]
+#set alphas [pfload alphas.sa]
+#set Ns [pfload Ns.sa]
+
+
+eval [format "pfsetgrid { %d %d %d } { %f %f %f } { %f %f %f } %s " $NX $NY $NZ $LowerX $LowerY $LowerZ $DX $DY $DZ {$dem}]
+
+eval [format "pfsetgrid { %d %d %d } { %f %f %f } { %f %f %f } %s " $NX $NY $NZ $LowerX $LowerY $LowerZ $DX $DY $DZ {$perm}]
+
+
+#pfsetgrid { 50 50 1 } { 0 0 0 } { 2 2 0.5 } $manning
+#pfsetgrid { 50 50 20 } { 0 0 0 } { 2 2 0.5 } $SSat
+#pfsetgrid { 50 50 20 } { 0 0 0 } { 2 2 0.5 } $SRes
+#pfsetgrid { 50 50 20 } { 0 0 0 } { 2 2 0.5 } $alphas
+#pfsetgrid { 50 50 20 } { 0 0 0 } { 2 2 0.5 } $Ns
+
+#set demfill [pfpitfilldem $dem  ]
+
+#set slopexwithzero 	[pfslopex $dem]
+#set slopeywithzero 	[pfslopey $dem]
+set slopex 		[pfslopex $dem]
+set slopey		[pfslopey $dem]
+
+#pfsetgrid { 100 100 100 } { 0 0 0 } { 1 1 0.1 } $slopex
+#pfsetgrid { 100 100 100 } { 0 0 0 } { 1 1 0.1 } $slopey
+
+
+#---------------------------------------------------------
+# Put all the pre-run data in input!
+#---------------------------------------------------------
+#file copy -force ic_pressure.pbf ../output/ic_pressure.pbf
+
+
+pfsave $dem 	-pfb dem.pfb
+pfsave $perm 	-pfb perm.pfb
+#pfsave $manning	-pfb manning.pfb
+puts "-----------------Initialisation-----------------"
+pfsave $slopex 	-pfb slopex.pfb
+pfsave $slopey 	-pfb slopey.pfb
+#pfsave $SSat 	-pfb SSat.pfb
+#pfsave $SRes 	-pfb SRes.pfb
+#pfsave $alphas 	-pfb alphas.pfb
+#pfsave $Ns 	-pfb Ns.pfb
+
+pfsave $dem 	-sa dem.txt
+#pfsave $slopexwithzero 	-sa slopexwithzero.txt
+#pfsave $slopeywithzero 	-sa slopeywithzero.txt
+pfsave $perm 	-sa perm.txt
+#pfsave $SSat 	-sa SSat.txt
+#pfsave $SRes 	-sa SSres.txt
+#pfsave $alphas 	-sa alphas.txt
+#pfsave $Ns 	-sa Ns.txt
+
+#pfsave $slopex -silo slopex.silo
+#pfsave $slopey -silo slopey.silo
+#pfsave $perm 	-silo perm.silo
+#pfsave $dem 	-silo DEM.silo
+#pfsave $SSat 	-silo SSat.silo
+#pfsave $SRes 	-silo SSres.silo
+#pfsave $alphas 	-silo alphas.silo
+#pfsave $Ns 	-silo Ns.silo
+
+#set flatfill [pffillflats $dem]
+#set pitfill [pfpitfilldem $dem 0.01 50]
+#set slopexpit [pfslopey $pitfill]
+#set slopeypit [pfslopey $pitfill]
+#pfsave $slopexpit -sa slopexpit.sa
+#pfsave $slopexpit -pfb slopexpit.pfb
+#pfsave $slopexpit -silo slopexpit.silo
+#pfsave $slopeypit -silo slopeypit.silo
+#pfsave $slopeypit -sa slopeypit.sa
+#pfsave $slopeypit -pfb slopeypit.pfb
+
+
+
+#file mkdir ./CLM_output
+#cd ./CLM_output
+#foreach dir {qflx_evap_grnd eflx_lh_tot qflx_evap_tot qflx_tran_veg qflx_infl swe_out eflx_lwrad_out t_grnd diag_out qflx_evap_soi eflx_soil_grnd eflx_sh_tot qflx_evap_veg qflx_top_soil} {
+#    file mkdir $dir
+#}
+#cd ..
+
+

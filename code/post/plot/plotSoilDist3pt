@@ -1,0 +1,47 @@
+
+
+[T,Z]=meshgrid(datenum(d.date),d.z((elev1-9):elev1));
+[T1,Z1]=meshgrid(datenum(d.date),d.z(1:elev1));
+
+
+fig=figure('units','normalized','outerposition',[0 0 1 1]);
+
+
+subplot(1,8,1);hold on; box on;grid on;
+    plot(d.date,reshape(d.snow(x1,y1,:),d.time.nt+1,1),'k');
+    plot(d.date,100*(reshape(d.surface.storage(x1,y1,:),d.time.nt+1,1)-d.surface.storage(x1,y1,1)),'g');
+    plot(d.date,100*(reshape(d.subsurface.storage(x1,y1,:),d.time.nt+1,1)-d.subsurface.storage(x1,y1,1)),'m');
+    bar(datenum(d.date),24*1000*d.flux.P);
+    %plot(d.date,reshape(d.flux.I(x1,y1,:),d.time.nt+1,1)*24,'g')
+    plot(d.date,24*1000*reshape(d.flux.E.t(x1,y1,:),d.time.nt+1,1),'y')
+    plot(d.date,24*1000*reshape(d.flux.R(x1,y1,:),d.time.nt+1,1),'r')
+    
+    
+%     X=[datenum(d.date) datenum(d.date) datenum(d.date)];
+%     Y1=[reshape(d.snow(x1,y1,:)/1000,d.time.nt+1,1) reshape(d.surface.storage(x1,y1,:),d.time.nt+1,1) reshape(d.subsurface.storage(x1,y1,:),d.time.nt+1,1)-d.subsurface.storage(x1,y1,1) ];
+%     Y2=1000*[d.flux.P reshape(d.flux.E.t(x1,y1,:),d.time.nt+1,1) reshape(d.flux.R(x1,y1,:),d.time.nt+1,1)];
+%     [AX,H1,H2] =plotyy(X,Y1,X,Y2);   
+%     set(H1(1),'Color','k');set(H1(2),'Color','g');set(H1(3),'Color','m');
+%     set(H2(1),'Color','b');set(H2(2),'Color','y');set(H2(3),'Color','r');
+%     xlim(AX(1),[datenum(d.date(1)) datenum(d.date(end))]); xlim(AX(2),[datenum(d.date(1)) datenum(d.date(end))]); 
+%     ylim(AX(2),[0 max(d.flux.P)]);ylim(AX(1),[0 max([d.snow(:)/1000; d.subsurface.storage(:)-d.subsurface.storage(1)])])
+%     ylabel(AX(1),'[m]');ylabel(AX(2),'[m/hr]');
+    
+    datetick('x','mmmm');xlim([datenum(d.date(1)) datenum(d.date(end))]);set(gca,'XTickLabel','');axis tight
+    legend('Snow [mm]','\Delta S_{surf} [cm]','\Delta S_{sub} [cm]','Precipitation [mm]','ET [mm]','Runoff [mm]','Location','Best','Orientation','Horizontal')
+    %legend('Snow','Precipitation','ET','Runoff','Location','North','Orientation','Horizontal')
+    
+    
+
+subplot(1,8,2);hold on; box on;grid on;
+    plot(d.date,d.temp.a);plot(d.date,reshape(d.temp.grnd(x1,y1,:),d.time.nt+1,1));
+    plot([datenum(d.date(1)) datenum(d.date(end))],[0 0],'--k')
+    xlim([datenum(d.date(1)) datenum(d.date(end))]); ylim([min([d.temp.a(:) ; d.temp.grnd(:)]) max([d.temp.a(:) ; d.temp.grnd(:)])])
+    ylabel('Temperature [C]');datetick('x','mmmm');xlim([datenum(d.date(1)) datenum(d.date(end))]);set(gca,'XTickLabel','');
+    legend('Air','Ground','Location','Best');
+
+subplot(1,8,[3 4])
+
+subplot(1,8,[5 6])
+
+subplot(1,8,[7 8])

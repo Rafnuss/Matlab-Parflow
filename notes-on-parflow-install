@@ -1,0 +1,18 @@
+# Some Notes on how to install parflow
+
+
+aptitude install libsundials-cvode1 libsundials-kinsol1 libsundials-serial-dev openmpi-bin libopenmpi-dev libopenmpi1.6
+
+use patch file ...
+
+change /usr/local to /home/raphael/soft/parflow
+
+pfsimulator
+./configure --with-clm --enable-timing --with-amps=mpi1 --with-amps-sequential-io --with-hypre=/usr --with-silo --with-sundials=/usr/lib --prefix=/usr/local
+
+pftools
+./configure --with-amps=mpi1 --with-amps-sequential-io --with-silo --prefix=/usr/local
+
+add 
+-lHYPRE_struct_mv -lHYPRE_struct_ls
+in LDLIBS in Makefile.config

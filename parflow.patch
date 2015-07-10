@@ -1,0 +1,33 @@
+--- a/pfsimulator/configure	2013-04-09 11:53:34.000000000 +0200
++++ b/pfsimulator/configure	2014-11-08 23:47:02.494389363 +0100
+@@ -14296,7 +14296,7 @@
+       silo_LIBS='-lsiloxx'
+       { $as_echo "$as_me:$LINENO: result: using $silo_LIBS" >&5
+ $as_echo "using $silo_LIBS" >&6; }
+-   elif test -f ${silo_PREFIX}/lib/libsiloh5.a; then
++   elif test -f ${silo_PREFIX}/lib/x86_64-linux-gnu/libsiloh5.a; then
+       silo_LIBS='-lsiloh5'
+       { $as_echo "$as_me:$LINENO: result: using $silo_LIBS" >&5
+ $as_echo "using $silo_LIBS" >&6; }
+--- a/pftools/configure	2013-04-09 11:53:34.000000000 +0200
++++ b/pftools/configure	2014-11-09 00:08:59.194339900 +0100
+@@ -9273,6 +9273,10 @@
+         tcl_PREFIX=${dir}
+ 	tcl_INCLUDES="-I${tcl_PREFIX}/include/tcl8.5"
+         break
++      elif test -f ${dir}/include/tcl8.6/tcl.h; then
++        tcl_PREFIX=${dir}
++	tcl_INCLUDES="-I${tcl_PREFIX}/include/tcl8.6"
++        break
+       else
+         { { echo "$as_me:$LINENO: error: TCL not found in /usr or /usr/local" >&5
+ echo "$as_me: error: TCL not found in /usr or /usr/local" >&2;}
+@@ -10742,7 +10746,7 @@
+       silo_LIBS='-lsiloxx'
+       { echo "$as_me:$LINENO: result: using $silo_LIBS" >&5
+ echo "${ECHO_T}using $silo_LIBS" >&6; }
+-   elif test -f ${silo_PREFIX}/lib/libsiloh5.a; then
++   elif test -f ${silo_PREFIX}/lib/x86_64-linux-gnu/libsiloh5.a; then
+       silo_LIBS='-lsiloh5'
+       { echo "$as_me:$LINENO: result: using $silo_LIBS" >&5
+ echo "${ECHO_T}using $silo_LIBS" >&6; }
